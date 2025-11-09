@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-dark bg-primary">
+    <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">Admin Panel</span>
+        <a href="index.html" class="btn btn-sm btn-outline-light">Back to Home</a>
+    </div>
+</nav>
+
+<div class="container py-5">
+   
+    <div id="adminLogin" class="card shadow-sm" style="max-width: 400px; margin: auto;">
+        <div class="card-body">
+            <h5 class="card-title mb-3">Administrator Login</h5>
+            <div class="form-floating mb-3">
+                <input type="password" id="adminPassword" class="form-control" placeholder="Password">
+                <label for="adminPassword">Admin Password</label>
+            </div>
+            <button onclick="adminLogin()" class="btn btn-primary w-100">Login as Admin</button>
+        </div>
+    </div>
+
+ 
+    <div id="adminControls" class="d-none">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Registered Users</h2>
+            <div>
+                <button onclick="loadAllUsers()" class="btn btn-info me-2">Refresh List</button>
+                <button onclick="clearAllUsers()" class="btn btn-danger">Clear All Users</button>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle bg-white rounded shadow-sm">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                    </tr>
+                </thead>
+                <tbody id="usersList">
+                </tbody>
+            </table>
+            <p id="noUsers" class="text-muted text-center d-none">No users registered yet.</p>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+
+function adminLogin() {
+    const pwd = document.getElementById('adminPassword').value;
+    if (pwd !== 'admin123') {               
+        alert('Incorrect password');
+        return;
+    }
+    document.getElementById('adminLogin').classList.add('d-none');
+    document.getElementById('adminControls').classList.remove('d-none');
+    loadAllUsers();
+}
+
+function loadAllUsers() {
+    const users = JSON.parse(localStorage.getItem('adminUsers') || '[]');
+    const tbody = document.getElementById('usersList');
+    const noUsers = document.getElementById('noUsers');
+
+    tbody.innerHTML = '';
+    if (!users.length) {
+        noUsers.classList.remove('d-none');
+        return;
+    }
+    noUsers.classList.add('d-none');
+    users.forEach((u, i) => {
+        tbody.insertAdjacentHTML('beforeend', `
+            <tr>
+                <td>${i + 1}</td>
+                <td>${u.name}</td>
+                <td>${u.email}</td>
+                <td>${u.phone || '—'}</td>
+            </tr>
+        `);
+    });
+}
+
+
+function clearAllUsers() {
+    if (confirm('Delete all registered users?')) {
+        localStorage.removeItem('adminUsers');
+        loadAllUsers();
+    }
+}
+</script>
+</body>
+</html>
